@@ -1,155 +1,114 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Activity } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Activity,
-  Bot,
-  Brain,
-  CircuitBoard,
-  DollarSign,
-  HardDrive,
-  MessageSquare,
-  ScrollText,
-  Shield,
-} from "lucide-react";
 
-const panels = [
-  {
-    title: "Agent Roster",
-    description: "16 agents — status, model, last invocation",
-    icon: Bot,
-    span: "col-span-2",
-  },
-  {
-    title: "System Health",
-    description: "Ollama, Gateway, Drive",
-    icon: HardDrive,
-    span: "",
-  },
-  {
-    title: "Cost Tracker",
-    description: "Per-agent token usage and cost",
-    icon: DollarSign,
-    span: "",
-  },
-  {
-    title: "Workflow Monitor",
-    description: "DFB, Signal Scanner, Content Engine",
-    icon: CircuitBoard,
-    span: "",
-  },
-  {
-    title: "2Brain Stats",
-    description: "Wiki articles, sources, knowledge gaps",
-    icon: Brain,
-    span: "",
-  },
-  {
-    title: "Memory Ops",
-    description: "Agent read/write/search transparency",
-    icon: ScrollText,
-    span: "",
-  },
-  {
-    title: "Decision Log",
-    description: "Recent decisions by Milo and Elon",
-    icon: Shield,
-    span: "",
-  },
-  {
-    title: "Channel Status",
-    description: "Discord, Telegram, Email",
-    icon: MessageSquare,
-    span: "",
-  },
-];
+import { PipelineView } from "@/components/pipeline-view";
+import { AgentRoster } from "@/components/agent-roster";
+import { SystemHealth } from "@/components/system-health";
+import { CostTracker } from "@/components/cost-tracker";
+import { WorkflowMonitor } from "@/components/workflow-monitor";
+import { BrainStats } from "@/components/brain-stats";
+import { MemoryFeed } from "@/components/memory-feed";
+import { DecisionLog } from "@/components/decision-log";
+import { ChannelStatus } from "@/components/channel-status";
 
-export default function Dashboard() {
+import { getGatewayHealth } from "@/lib/gateway";
+import { getOllamaStatus, getRunningModels, getDiskSpace } from "@/lib/ollama";
+import { queryCosts, queryMemoryOps, queryRecentCostsByAgent } from "@/lib/sqlite";
+import { getDecisionLog, getActiveProjects, getBrainStats } from "@/lib/state";
+import { getAgentRoster } from "@/lib/agents";
+import { getWorkflows, getChannels } from "@/lib/workflows";
+
+export const dynamic = "force-dynamic";
+
+export default async function Dashboard() {
+  const [gateway, ollama, runningModels, disk] = await Promise.all([
+    getGatewayHealth(),
+    getOllamaStatus(),
+    getRunningModels(),
+    Promise.resolve(getDiskSpace()),
+  ]);
+
+  const agents = getAgentRoster();
+  const costData = queryRecentCostsByAgent() as { agent: string; total_cost: number; total_tokens: number }[];
+  const memoryOps = queryMemoryOps(50) as {
+    timestamp: string;
+    agent: string;
+    operation: string;
+    query: string | null;
+    result_count: number | null;
+    content_preview: string | null;
+  }[];
+  const decisions = getDecisionLog();
+  const brainStats = getBrainStats();
+  const workflows = getWorkflows();
+  const channels = getChannels();
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-zinc-950">
       {/* Header */}
-      <header className="border-b border-zinc-800 px-6 py-4">
-        <div className="flex items-center gap-3">
-          <Activity className="h-6 w-6 text-indigo-500" />
-          <h1 className="text-xl font-semibold font-[family-name:var(--font-geist-sans)]">
-            Command Center
-          </h1>
-          <Badge variant="outline" className="ml-2 text-xs text-zinc-400">
-            OpenClaw v2026.4
-          </Badge>
+      <header className="border-b border-zinc-800/60 px-6 py-3.5 flex items-center gap-3 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-10">
+        <Activity className="h-5 w-5 text-indigo-500" />
+        <h1 className="text-base font-semibold tracking-tight font-[family-name:var(--font-geist-sans)]">
+          Command Center
+        </h1>
+        <Badge
+          variant="outline"
+          className="text-[10px] text-zinc-500 border-zinc-800"
+        >
+          OpenClaw v2026.4
+        </Badge>
+        <div className="ml-auto flex items-center gap-2">
+          <div
+            className={`h-1.5 w-1.5 rounded-full ${gateway.ok ? "bg-emerald-500" : "bg-rose-500"}`}
+          />
+          <span className="text-[10px] font-mono text-zinc-500">
+            {gateway.ok ? "Gateway live" : "Gateway down"}
+          </span>
         </div>
       </header>
 
-      {/* Pipeline View (Hero) */}
-      <section className="border-b border-zinc-800 px-6 py-6">
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardHeader>
-            <CardTitle className="text-lg">Pipeline View</CardTitle>
-            <CardDescription>
-              GOTCHA flow: Cortana → Specialists → Sentinel → Milo → Delivery
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4 overflow-x-auto py-4">
-              {[
-                "Cortana",
-                "Pulse",
-                "Sagan",
-                "Quant",
-                "Hemingway",
-                "Sentinel",
-                "Milo",
-              ].map((agent) => (
-                <div
-                  key={agent}
-                  className="flex flex-col items-center gap-2 min-w-[80px]"
-                >
-                  <div className="h-12 w-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-mono text-zinc-400">
-                    {agent[0]}
-                  </div>
-                  <span className="text-xs text-zinc-500">{agent}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </section>
+      <main className="flex-1 p-4 lg:p-6 space-y-4">
+        {/* Row 1: Pipeline (full width) */}
+        <PipelineView />
 
-      {/* Panel Grid */}
-      <main className="flex-1 px-6 py-6">
+        {/* Row 2: Agent Roster (wide) + System Health */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2">
+            <AgentRoster agents={agents} />
+          </div>
+          <SystemHealth
+            data={{
+              gateway,
+              ollama,
+              runningModels,
+              disk,
+            }}
+          />
+        </div>
+
+        {/* Row 3: Cost + Workflows + 2Brain */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {panels.map((panel) => (
-            <Card
-              key={panel.title}
-              className={`bg-zinc-900 border-zinc-800 ${panel.span}`}
-            >
-              <CardHeader className="flex flex-row items-center gap-3 pb-2">
-                <panel.icon className="h-5 w-5 text-indigo-500" />
-                <div>
-                  <CardTitle className="text-base">{panel.title}</CardTitle>
-                  <CardDescription className="text-xs">
-                    {panel.description}
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-zinc-500 font-mono">
-                  Awaiting live data...
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+          <CostTracker data={costData} />
+          <WorkflowMonitor workflows={workflows} />
+          <BrainStats data={brainStats} />
+        </div>
+
+        {/* Row 4: Memory Ops + Decision Log + Channels */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <MemoryFeed ops={memoryOps} />
+          <DecisionLog decisions={decisions} />
+          <ChannelStatus channels={channels} />
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800 px-6 py-3 text-xs text-zinc-600 font-mono">
-        Command Center Dashboard — Kairo | OpenClaw GOTCHA Framework
+      <footer className="border-t border-zinc-800/40 px-6 py-2.5 flex items-center justify-between">
+        <span className="text-[10px] text-zinc-600 font-mono">
+          Command Center Dashboard — Kairo
+        </span>
+        <span className="text-[10px] text-zinc-700 font-mono">
+          GOTCHA Framework · {new Date().toLocaleDateString()}
+        </span>
       </footer>
     </div>
   );

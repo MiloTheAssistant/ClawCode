@@ -21,4 +21,7 @@ export const config = {
       process.env.OPENCLAW_MASTER_ROOT ||
       "/Volumes/BotCentral/Users/milo/repos/OpenClawMaster",
   },
+  disk: {
+    volume: "/Volumes/BotCentral",
+  },
 } as const;
