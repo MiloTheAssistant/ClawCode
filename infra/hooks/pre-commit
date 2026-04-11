@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Reject commits that ADD lines containing API key patterns
+# Patterns are split to avoid self-triggering
+
+PATTERNS=(
+  "sk-""ant-"
+  "nva""pi-"
+  "ghp""_"
+  "ppl""x-"
+  "sk-or""-v1-"
+)
+
+# Only check added lines (lines starting with +, excluding the +++ header)
+ADDED=$(git diff --cached --diff-filter=ACMR -U0 | grep '^+' | grep -v '^+++')
+
+for pat in "${PATTERNS[@]}"; do
+  if echo "$ADDED" | grep -qF "$pat"; then
+    echo "ERROR: Staged changes add a line containing a secret pattern: $pat"
+    echo "Remove the secret and use \${VAR_NAME} placeholders instead."
+    exit 1
+  fi
+done
+
+exit 0
