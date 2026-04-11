@@ -51,7 +51,7 @@ export function SystemHealth({ data }: { data: HealthData }) {
   ];
 
   return (
-    <Card className="bg-zinc-900/50 border-zinc-800">
+    <Card className="bg-[#232442]/60 border-white/[0.06]">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <HardDrive className="h-4 w-4 text-indigo-500" />

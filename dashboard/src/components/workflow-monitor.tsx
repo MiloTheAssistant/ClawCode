@@ -26,7 +26,7 @@ const statusColors: Record<string, string> = {
 
 export function WorkflowMonitor({ workflows }: { workflows: Workflow[] }) {
   return (
-    <Card className="bg-zinc-900/50 border-zinc-800">
+    <Card className="bg-[#232442]/60 border-white/[0.06]">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <CircuitBoard className="h-4 w-4 text-indigo-500" />
@@ -42,7 +42,7 @@ export function WorkflowMonitor({ workflows }: { workflows: Workflow[] }) {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08, duration: 0.25 }}
-            className="rounded-md bg-zinc-800/30 border border-zinc-800 p-3"
+            className="rounded-md bg-white/[0.03] border border-white/[0.06] p-3"
           >
             <div className="flex items-center justify-between mb-1.5">
               <p className="text-xs font-medium text-zinc-200">{wf.name}</p>

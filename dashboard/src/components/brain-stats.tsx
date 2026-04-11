@@ -25,7 +25,7 @@ export function BrainStats({ data }: { data: BrainData }) {
   ];
 
   return (
-    <Card className="bg-zinc-900/50 border-zinc-800">
+    <Card className="bg-[#232442]/60 border-white/[0.06]">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <Brain className="h-4 w-4 text-indigo-500" />
@@ -44,7 +44,7 @@ export function BrainStats({ data }: { data: BrainData }) {
               transition={{ delay: i * 0.08, duration: 0.25 }}
               className="text-center"
             >
-              <stat.icon className="h-3.5 w-3.5 text-zinc-600 mx-auto mb-1" />
+              <stat.icon className="h-3.5 w-3.5 text-zinc-500 mx-auto mb-1" />
               <p className="text-lg font-mono text-zinc-100">{stat.value}</p>
               <p className="text-[10px] text-zinc-500">{stat.label}</p>
             </motion.div>

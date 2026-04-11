@@ -26,7 +26,7 @@ const PIPELINE_STAGES: PipelineAgent[] = [
 
 export function PipelineView() {
   return (
-    <Card className="bg-zinc-900/50 border-zinc-800">
+    <Card className="bg-[#232442]/60 border-white/[0.06]">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium text-zinc-400 uppercase tracking-wider">
           Pipeline
@@ -66,7 +66,7 @@ export function PipelineView() {
                         ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-400"
                         : agent.status === "error"
                           ? "bg-rose-500/10 border-rose-500/40 text-rose-400"
-                          : "bg-zinc-800/50 border-zinc-700 text-zinc-500"
+                          : "bg-white/[0.05] border-white/[0.08] text-zinc-500"
                   }`}
                 >
                   {agent.status === "active" ? (
@@ -83,7 +83,7 @@ export function PipelineView() {
                       ? "text-indigo-400"
                       : agent.status === "done"
                         ? "text-emerald-400/70"
-                        : "text-zinc-600"
+                        : "text-zinc-500"
                   }`}
                 >
                   {agent.name}
@@ -94,7 +94,7 @@ export function PipelineView() {
                   className={`w-6 h-px mx-1 ${
                     agent.status === "done"
                       ? "bg-emerald-500/30"
-                      : "bg-zinc-800"
+                      : "bg-white/[0.06]"
                   }`}
                 />
               )}

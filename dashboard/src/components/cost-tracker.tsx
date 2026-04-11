@@ -21,7 +21,7 @@ export function CostTracker({ data }: { data: CostEntry[] }) {
   const maxTokens = Math.max(...data.map((d) => d.total_tokens || 0), 1);
 
   return (
-    <Card className="bg-zinc-900/50 border-zinc-800">
+    <Card className="bg-[#232442]/60 border-white/[0.06]">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <DollarSign className="h-4 w-4 text-indigo-500" />
@@ -33,10 +33,10 @@ export function CostTracker({ data }: { data: CostEntry[] }) {
       <CardContent>
         {data.length === 0 ? (
           <div className="text-center py-6">
-            <p className="text-xs text-zinc-600 font-mono">
+            <p className="text-xs text-zinc-500 font-mono">
               No cost data yet
             </p>
-            <p className="text-[10px] text-zinc-700 mt-1">
+            <p className="text-[10px] text-zinc-500 mt-1">
               Costs appear after agent API calls
             </p>
           </div>
@@ -73,9 +73,9 @@ export function CostTracker({ data }: { data: CostEntry[] }) {
                       ${(entry.total_cost || 0).toFixed(3)}
                     </span>
                   </div>
-                  <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-indigo-500/60 rounded-full"
+                      className="h-full bg-indigo-400/70 rounded-full"
                       style={{
                         width: `${((entry.total_tokens || 0) / maxTokens) * 100}%`,
                       }}

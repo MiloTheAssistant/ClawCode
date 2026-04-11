@@ -21,7 +21,7 @@ interface Decision {
 
 export function DecisionLog({ decisions }: { decisions: Decision[] }) {
   return (
-    <Card className="bg-zinc-900/50 border-zinc-800">
+    <Card className="bg-[#232442]/60 border-white/[0.06]">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <Shield className="h-4 w-4 text-indigo-500" />
@@ -39,7 +39,7 @@ export function DecisionLog({ decisions }: { decisions: Decision[] }) {
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.06, duration: 0.25 }}
-                className="rounded-md bg-zinc-800/30 border border-zinc-800 p-2.5"
+                className="rounded-md bg-white/[0.03] border border-white/[0.06] p-2.5"
               >
                 <div className="flex items-center gap-2 mb-1">
                   <Badge
@@ -50,7 +50,7 @@ export function DecisionLog({ decisions }: { decisions: Decision[] }) {
                   </Badge>
                   <span className="text-[10px] text-zinc-500">{d.made_by}</span>
                   {d.date && d.date !== "\u2014" && (
-                    <span className="text-[10px] text-zinc-600 font-mono ml-auto">
+                    <span className="text-[10px] text-zinc-500 font-mono ml-auto">
                       {d.date}
                     </span>
                   )}

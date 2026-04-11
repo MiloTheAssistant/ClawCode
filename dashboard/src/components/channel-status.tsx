@@ -25,7 +25,7 @@ const channelIcons: Record<string, typeof Send> = {
 
 export function ChannelStatus({ channels }: { channels: Channel[] }) {
   return (
-    <Card className="bg-zinc-900/50 border-zinc-800">
+    <Card className="bg-[#232442]/60 border-white/[0.06]">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4 text-indigo-500" />
@@ -59,7 +59,7 @@ export function ChannelStatus({ channels }: { channels: Channel[] }) {
               >
                 {ch.enabled ? "enabled" : "disabled"}
               </Badge>
-              <span className="text-[10px] font-mono text-zinc-600 ml-auto">
+              <span className="text-[10px] font-mono text-zinc-500 ml-auto">
                 {ch.details}
               </span>
             </motion.div>

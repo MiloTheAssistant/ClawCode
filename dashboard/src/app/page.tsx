@@ -44,24 +44,29 @@ export default async function Dashboard() {
   const channels = getChannels();
 
   return (
-    <div className="flex flex-col min-h-screen bg-zinc-950">
+    <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <header className="border-b border-zinc-800/60 px-6 py-3.5 flex items-center gap-3 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-10">
-        <Activity className="h-5 w-5 text-indigo-500" />
-        <h1 className="text-base font-semibold tracking-tight font-[family-name:var(--font-geist-sans)]">
-          Command Center
-        </h1>
+      <header className="border-b border-white/[0.06] px-6 py-3.5 flex items-center gap-3 bg-[#1e1f35]/80 backdrop-blur-md sticky top-0 z-10">
+        <div className="h-8 w-8 rounded-lg bg-indigo-500/15 flex items-center justify-center">
+          <Activity className="h-4 w-4 text-indigo-400" />
+        </div>
+        <div>
+          <h1 className="text-sm font-semibold tracking-tight text-white font-[family-name:var(--font-geist-sans)]">
+            Command Center
+          </h1>
+          <p className="text-[10px] text-zinc-500 font-mono -mt-0.5">OpenClaw GOTCHA Framework</p>
+        </div>
         <Badge
           variant="outline"
-          className="text-[10px] text-zinc-500 border-zinc-800"
+          className="text-[10px] text-indigo-300/70 border-indigo-500/20 bg-indigo-500/5 ml-2"
         >
-          OpenClaw v2026.4
+          v2026.4
         </Badge>
         <div className="ml-auto flex items-center gap-2">
           <div
-            className={`h-1.5 w-1.5 rounded-full ${gateway.ok ? "bg-emerald-500" : "bg-rose-500"}`}
+            className={`h-2 w-2 rounded-full ${gateway.ok ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.4)]" : "bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.4)]"}`}
           />
-          <span className="text-[10px] font-mono text-zinc-500">
+          <span className="text-[11px] font-mono text-zinc-400">
             {gateway.ok ? "Gateway live" : "Gateway down"}
           </span>
         </div>
@@ -102,12 +107,12 @@ export default async function Dashboard() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800/40 px-6 py-2.5 flex items-center justify-between">
-        <span className="text-[10px] text-zinc-600 font-mono">
-          Command Center Dashboard — Kairo
+      <footer className="border-t border-white/[0.04] px-6 py-2.5 flex items-center justify-between">
+        <span className="text-[10px] text-zinc-500 font-mono">
+          Kairo — Command Center Dashboard
         </span>
-        <span className="text-[10px] text-zinc-700 font-mono">
-          GOTCHA Framework · {new Date().toLocaleDateString()}
+        <span className="text-[10px] text-zinc-600 font-mono">
+          {new Date().toLocaleDateString()}
         </span>
       </footer>
     </div>
