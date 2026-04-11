@@ -68,13 +68,17 @@ export function getChannels(): ChannelStatus[] {
         name: "Telegram",
         enabled: channels.telegram?.enabled ?? false,
         lastActivity: null,
-        details: channels.telegram?.streaming || "off",
+        details: typeof channels.telegram?.streaming === "string"
+          ? channels.telegram.streaming
+          : channels.telegram?.streaming?.mode || "off",
       },
       {
         name: "Discord",
         enabled: channels.discord?.enabled ?? false,
         lastActivity: null,
-        details: channels.discord?.streaming || "off",
+        details: typeof channels.discord?.streaming === "string"
+          ? channels.discord.streaming
+          : channels.discord?.streaming?.mode || "off",
       },
       {
         name: "Email (Gmail MCP)",
