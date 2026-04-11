@@ -21,27 +21,41 @@ import { getWorkflows, getChannels } from "@/lib/workflows";
 export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
-  const [gateway, ollama, runningModels, disk] = await Promise.all([
-    getGatewayHealth(),
-    getOllamaStatus(),
-    getRunningModels(),
-    Promise.resolve(getDiskSpace()),
+  const [gateway, ollama, runningModels] = await Promise.all([
+    getGatewayHealth().catch(() => ({ ok: false, status: "unreachable" })),
+    getOllamaStatus().catch(() => ({ running: false, modelCount: 0, models: [] })),
+    getRunningModels().catch(() => []),
   ]);
 
-  const agents = getAgentRoster();
-  const costData = queryRecentCostsByAgent() as { agent: string; total_cost: number; total_tokens: number }[];
-  const memoryOps = queryMemoryOps(50) as {
+  let disk = null;
+  try { disk = getDiskSpace(); } catch { /* no-op on Vercel */ }
+
+  let agents: ReturnType<typeof getAgentRoster> = [];
+  try { agents = getAgentRoster(); } catch { /* no-op */ }
+
+  let costData: { agent: string; total_cost: number; total_tokens: number }[] = [];
+  try { costData = queryRecentCostsByAgent() as typeof costData; } catch { /* no-op */ }
+
+  let memoryOps: {
     timestamp: string;
     agent: string;
     operation: string;
     query: string | null;
     result_count: number | null;
     content_preview: string | null;
-  }[];
-  const decisions = getDecisionLog();
-  const brainStats = getBrainStats();
-  const workflows = getWorkflows();
-  const channels = getChannels();
+  }[] = [];
+  try { memoryOps = queryMemoryOps(50) as typeof memoryOps; } catch { /* no-op */ }
+
+  let decisions: ReturnType<typeof getDecisionLog> = [];
+  try { decisions = getDecisionLog(); } catch { /* no-op */ }
+
+  const brainStats = (() => { try { return getBrainStats(); } catch { return { wikiArticles: 0, rawSources: 0, briefings: 0, lastWikiUpdate: null, lastBriefing: null }; } })();
+
+  let workflows: ReturnType<typeof getWorkflows> = [];
+  try { workflows = getWorkflows(); } catch { /* no-op */ }
+
+  let channels: ReturnType<typeof getChannels> = [];
+  try { channels = getChannels(); } catch { /* no-op */ }
 
   return (
     <div className="flex flex-col min-h-screen">
