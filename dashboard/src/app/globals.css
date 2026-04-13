@@ -48,73 +48,67 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ─── Light NOC Theme ─────────────────────────────────────────────────────── */
+/* 22nd Century Network Operations Center — slate-50 background, white cards,  */
+/* indigo-500 accent, semantic status colors.                                   */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  /* Surfaces */
+  --background: oklch(0.984 0.003 247);   /* slate-50  #f8fafc */
+  --foreground: oklch(0.213 0.022 264);   /* slate-900 #0f172a */
 
-.dark {
-  --background: oklch(0.205 0.006 264);
-  --foreground: oklch(0.95 0 0);
-  --card: oklch(0.25 0.005 264);
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.25 0.005 264);
-  --popover-foreground: oklch(0.95 0 0);
-  --primary: oklch(0.637 0.237 264);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.31 0.008 264);
-  --secondary-foreground: oklch(0.95 0 0);
-  --muted: oklch(0.31 0.008 264);
-  --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.31 0.012 264);
-  --accent-foreground: oklch(0.95 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.637 0.237 264);
-  --chart-1: oklch(0.637 0.237 264);
-  --chart-2: oklch(0.7 0.15 170);
-  --chart-3: oklch(0.7 0.15 45);
-  --chart-4: oklch(0.65 0.2 330);
-  --chart-5: oklch(0.75 0.1 90);
-  --sidebar: oklch(0.23 0.006 264);
-  --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.637 0.237 264);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.31 0.008 264);
-  --sidebar-accent-foreground: oklch(0.95 0 0);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.637 0.237 264);
+  /* Cards — white with slate-200 border */
+  --card: oklch(1 0 0);                   /* white */
+  --card-foreground: oklch(0.213 0.022 264);
+
+  /* Popovers */
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.213 0.022 264);
+
+  /* Primary — indigo-500 #6366f1 */
+  --primary: oklch(0.585 0.233 277);
+  --primary-foreground: oklch(1 0 0);
+
+  /* Secondary — slate-100 */
+  --secondary: oklch(0.962 0.004 247);
+  --secondary-foreground: oklch(0.279 0.022 264);
+
+  /* Muted — slate-100 / slate-500 */
+  --muted: oklch(0.962 0.004 247);
+  --muted-foreground: oklch(0.554 0.013 264);
+
+  /* Accent — indigo-50 background, indigo-700 text */
+  --accent: oklch(0.962 0.018 277);
+  --accent-foreground: oklch(0.432 0.213 277);
+
+  /* Destructive — rose-600 */
+  --destructive: oklch(0.577 0.245 27.325);
+
+  /* Borders & inputs — slate-200 */
+  --border: oklch(0.927 0.007 247);
+  --input: oklch(0.927 0.007 247);
+
+  /* Ring — indigo-500 */
+  --ring: oklch(0.585 0.233 277);
+
+  /* Chart colors — visible on light background */
+  --chart-1: oklch(0.585 0.233 277);     /* indigo-500  */
+  --chart-2: oklch(0.696 0.17 162);      /* emerald-500 */
+  --chart-3: oklch(0.7 0.183 45);        /* amber-500   */
+  --chart-4: oklch(0.585 0.233 230);     /* sky-600     */
+  --chart-5: oklch(0.595 0.22 310);      /* violet-600  */
+
+  /* Radius */
+  --radius: 0.625rem;
+
+  /* Sidebar — white / slate-50 */
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.213 0.022 264);
+  --sidebar-primary: oklch(0.585 0.233 277);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.962 0.018 277);
+  --sidebar-accent-foreground: oklch(0.432 0.213 277);
+  --sidebar-border: oklch(0.927 0.007 247);
+  --sidebar-ring: oklch(0.585 0.233 277);
 }
 
 @layer base {
@@ -127,4 +121,41 @@
   html {
     @apply font-sans;
   }
+}
+
+/* ─── Status Glow Utilities ───────────────────────────────────────────────── */
+/* Apply to status dots and active indicators. Each adds a subtle colored      */
+/* box-shadow that reads clearly on the light NOC background.                  */
+
+.glow-indigo {
+  box-shadow: 0 0 0 2px oklch(0.962 0.018 277), 0 0 8px 2px oklch(0.585 0.233 277 / 0.4);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 0 2px oklch(0.955 0.05 162), 0 0 8px 2px oklch(0.696 0.17 162 / 0.4);
+}
+
+.glow-amber {
+  box-shadow: 0 0 0 2px oklch(0.97 0.07 85), 0 0 8px 2px oklch(0.7 0.183 45 / 0.4);
+}
+
+.glow-rose {
+  box-shadow: 0 0 0 2px oklch(0.97 0.04 10), 0 0 8px 2px oklch(0.645 0.246 16 / 0.4);
+}
+
+.glow-sky {
+  box-shadow: 0 0 0 2px oklch(0.961 0.033 222), 0 0 8px 2px oklch(0.585 0.233 230 / 0.4);
+}
+
+/* ─── Idle Agent Utility ──────────────────────────────────────────────────── */
+/* Idle agents render at 70% opacity; they animate to full on activation.      */
+
+.agent-idle {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.agent-idle:hover,
+.agent-active {
+  opacity: 1;
 }
