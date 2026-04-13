@@ -224,7 +224,7 @@ export function CommandCards({ agents, telemetry }: CommandCardsProps) {
         telemetry={miloTelemetry}
         allTelemetry={telemetry}
         glowClass="glow-indigo"
-        roleDescription="Governor — intake, policy, HALT, delivery"
+        roleDescription="Executive Assistant — intake, clarity, HALT authority, 1:1 interface"
         isElon={false}
       />
       <CommandCard
@@ -232,7 +232,7 @@ export function CommandCards({ agents, telemetry }: CommandCardsProps) {
         telemetry={elonTelemetry}
         allTelemetry={telemetry}
         glowClass="glow-amber"
-        roleDescription="Orchestrator — task graphs, fan-out/fan-in"
+        roleDescription="First-Principles Orchestrator — task graphs, agent selection, fan-out/fan-in"
         isElon={true}
       />
     </div>
