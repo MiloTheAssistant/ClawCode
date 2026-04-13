@@ -1,4 +1,6 @@
 import { existsSync } from "fs";
+import { mkdirSync } from "fs";
+import { dirname } from "path";
 import { config } from "./config";
 
 function getDb() {
@@ -7,6 +9,40 @@ function getDb() {
     // Dynamic import to avoid crash when better-sqlite3 native module isn't available (e.g. Vercel)
     const Database = require("better-sqlite3");
     return new Database(config.sqlite.dbPath, { readonly: true });
+  } catch {
+    return null;
+  }
+}
+
+export function getDbRW() {
+  try {
+    // Ensure parent directory exists before opening/creating the database
+    const dir = dirname(config.sqlite.dbPath);
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+    const Database = require("better-sqlite3");
+    const db = new Database(config.sqlite.dbPath);
+    // Create tasks table on first call if it doesn't exist
+    const createTasks = `
+      CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT,
+        status TEXT NOT NULL DEFAULT 'not_started',
+        priority TEXT NOT NULL DEFAULT 'medium',
+        assigned_agent TEXT,
+        dispatched_by TEXT,
+        router_profile TEXT,
+        model TEXT,
+        complexity INTEGER,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        completed_at TEXT
+      )
+    `;
+    db.prepare(createTasks).run();
+    return db;
   } catch {
     return null;
   }
