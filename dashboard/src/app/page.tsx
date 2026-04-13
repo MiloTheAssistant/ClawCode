@@ -1,6 +1,6 @@
 import { getAgentRoster } from "@/lib/agents";
 import { getAgentTelemetry24h } from "@/lib/telemetry";
-import { getTasks } from "@/lib/tasks";
+import { getGatewayTasks, getTasks } from "@/lib/tasks";
 import { CommandCards } from "@/components/command-cards";
 import { ActiveSpecialists } from "@/components/active-specialists";
 import { KanbanBoard } from "@/components/kanban-board";
@@ -14,8 +14,12 @@ export default async function Dashboard() {
   let telemetry: ReturnType<typeof getAgentTelemetry24h> = [];
   try { telemetry = getAgentTelemetry24h(); } catch { /* no-op */ }
 
+  // Prefer gateway task runs (real dispatch data); fall back to local SQLite
   let tasks: ReturnType<typeof getTasks> = [];
-  try { tasks = getTasks(); } catch { /* no-op */ }
+  try {
+    tasks = getGatewayTasks(50);
+    if (tasks.length === 0) tasks = getTasks();
+  } catch { /* no-op */ }
 
   return (
     <div className="p-4 lg:p-6 space-y-6">

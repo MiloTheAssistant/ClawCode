@@ -55,6 +55,10 @@ const AGENT_COLORS: Record<string, string> = {
 const OPENCLAW_DIR =
   process.env.OPENCLAW_DIR || "/Volumes/BotCentral/Users/milo/.openclaw";
 
+// Runtime config — the gateway reads this, not the repo copy
+const OPENCLAW_JSON =
+  process.env.OPENCLAW_JSON || join(OPENCLAW_DIR, "openclaw.json");
+
 function getAgentSessionStatus(
   agentId: string
 ): "idle" | "active" | "error" | "exclusive" {
@@ -98,10 +102,7 @@ function extractProvider(model: string): string {
 
 export function getAgentRoster(): AgentInfo[] {
   try {
-    const raw = readFileSync(
-      join(config.openclawMaster.root, "openclaw.json"),
-      "utf-8"
-    );
+    const raw = readFileSync(OPENCLAW_JSON, "utf-8");
     const data = JSON.parse(raw);
     const agents = data.agents?.list ?? [];
 

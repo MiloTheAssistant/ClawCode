@@ -1,4 +1,5 @@
 import { getDbRW } from "./sqlite";
+import { existsSync } from "fs";
 
 const VALID_STATUSES = [
   "not_started",
@@ -8,6 +9,100 @@ const VALID_STATUSES = [
   "complete",
 ] as const;
 const VALID_PRIORITIES = ["low", "medium", "high"] as const;
+
+const GATEWAY_RUNS_DB =
+  process.env.GATEWAY_RUNS_DB ||
+  "/Volumes/BotCentral/Users/milo/.openclaw/tasks/runs.sqlite";
+
+// Map gateway task_runs.status to kanban lane status
+function mapGatewayStatus(status: string): TaskStatus {
+  switch (status) {
+    case "queued":
+      return "not_started";
+    case "running":
+      return "working";
+    case "succeeded":
+      return "complete";
+    case "failed":
+    case "cancelled":
+    case "timed_out":
+      return "stuck";
+    default:
+      return "not_started";
+  }
+}
+
+// Map gateway task_runs.runtime to priority
+function mapPriority(runtime: string): TaskPriority {
+  if (runtime === "cli") return "high";
+  if (runtime === "subagent") return "medium";
+  return "low";
+}
+
+/**
+ * Read task runs from the gateway's runs.sqlite (the real dispatch data).
+ * Falls back to the 2Brain tasks table if gateway DB is unavailable.
+ */
+export function getGatewayTasks(limit = 50): Task[] {
+  if (!existsSync(GATEWAY_RUNS_DB)) return [];
+  try {
+    const Database = require("better-sqlite3");
+    const db = new Database(GATEWAY_RUNS_DB, { readonly: true });
+    const rows = db
+      .prepare(
+        `SELECT task_id, runtime, agent_id, label, task, status,
+                created_at, started_at, ended_at, error,
+                progress_summary, terminal_summary, owner_key
+         FROM task_runs
+         WHERE runtime IN ('subagent', 'cli', 'automation')
+         ORDER BY created_at DESC
+         LIMIT ?`
+      )
+      .all(limit) as Array<{
+      task_id: string;
+      runtime: string;
+      agent_id: string | null;
+      label: string | null;
+      task: string | null;
+      status: string;
+      created_at: number;
+      started_at: number | null;
+      ended_at: number | null;
+      error: string | null;
+      progress_summary: string | null;
+      terminal_summary: string | null;
+      owner_key: string | null;
+    }>;
+    db.close();
+
+    return rows.map((r, i) => {
+      // Extract agent from owner_key like "agent:main:main" → "main"
+      const ownerParts = (r.owner_key || "").split(":");
+      const dispatchedBy = ownerParts[1] || null;
+      // Title: use label, first 80 chars of task, or task_id
+      const title =
+        r.label || (r.task ? r.task.slice(0, 80) : r.task_id.slice(0, 8));
+
+      return {
+        id: i + 1,
+        title,
+        description: r.terminal_summary || r.progress_summary || r.error || null,
+        status: mapGatewayStatus(r.status),
+        priority: mapPriority(r.runtime),
+        assigned_agent: r.agent_id,
+        dispatched_by: dispatchedBy,
+        router_profile: r.runtime,
+        model: null,
+        complexity: null,
+        created_at: new Date(r.created_at).toISOString(),
+        updated_at: new Date(r.ended_at || r.started_at || r.created_at).toISOString(),
+        completed_at: r.ended_at ? new Date(r.ended_at).toISOString() : null,
+      } satisfies Task;
+    });
+  } catch {
+    return [];
+  }
+}
 
 export type TaskStatus = (typeof VALID_STATUSES)[number];
 export type TaskPriority = (typeof VALID_PRIORITIES)[number];

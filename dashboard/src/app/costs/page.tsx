@@ -1,4 +1,4 @@
-import { queryCosts, queryRecentCostsByAgent } from "@/lib/sqlite";
+import { execFileSync } from "child_process";
 import {
   Card,
   CardContent,
@@ -17,39 +17,66 @@ import { DollarSign, Cpu, TrendingUp } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-interface CostRow {
-  agent: string;
-  provider: string;
-  model: string;
-  tokens_in: number;
-  tokens_out: number;
-  total_cost: number;
+interface DailyEntry {
+  date: string;
+  input: number;
+  output: number;
+  cacheRead: number;
+  cacheWrite: number;
+  totalTokens: number;
+  totalCost: number;
+  missingCostEntries: number;
 }
 
-interface AgentCostRow {
-  agent: string;
-  total_cost: number;
-  total_tokens: number;
+interface UsageCostResponse {
+  daily?: DailyEntry[];
+  totals?: {
+    input: number;
+    output: number;
+    totalTokens: number;
+    totalCost: number;
+  };
+}
+
+function gatewayUsageCost(): UsageCostResponse {
+  try {
+    const out = execFileSync(
+      "openclaw",
+      ["gateway", "call", "usage.cost", "--json"],
+      {
+        timeout: 8_000,
+        env: { ...process.env, NO_COLOR: "1" },
+        stdio: ["ignore", "pipe", "ignore"],
+      }
+    ).toString();
+    const start = Math.min(
+      out.indexOf("{") >= 0 ? out.indexOf("{") : Infinity,
+      out.indexOf("[") >= 0 ? out.indexOf("[") : Infinity
+    );
+    return JSON.parse(out.slice(start));
+  } catch {
+    return {};
+  }
 }
 
 function fmt$(n: number) {
-  return `$${(n || 0).toFixed(2)}`;
+  if (n === 0) return "$0.00 (local)";
+  return `$${(n || 0).toFixed(4)}`;
 }
 
 function fmtTokens(n: number) {
-  return (n || 0).toLocaleString();
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}k`;
+  return String(n || 0);
 }
 
 export default async function CostsPage() {
-  let monthly: CostRow[] = [];
-  try { monthly = queryCosts("month") as CostRow[]; } catch { /* graceful */ }
+  const data = gatewayUsageCost();
+  const daily = (data.daily ?? []).filter((d) => d.totalTokens > 0).reverse(); // most recent first
+  const totals = data.totals ?? { input: 0, output: 0, totalTokens: 0, totalCost: 0 };
 
-  let byAgent: AgentCostRow[] = [];
-  try { byAgent = queryRecentCostsByAgent() as AgentCostRow[]; } catch { /* graceful */ }
-
-  const totalSpend = byAgent.reduce((s: number, r: AgentCostRow) => s + (r.total_cost || 0), 0);
-  const totalTokens = byAgent.reduce((s: number, r: AgentCostRow) => s + (r.total_tokens || 0), 0);
-  const topAgent = byAgent[0] ?? null;
+  // Peak day
+  const peakDay = [...daily].sort((a, b) => b.totalTokens - a.totalTokens)[0] ?? null;
 
   return (
     <div className="p-4 lg:p-6 space-y-6">
@@ -57,7 +84,7 @@ export default async function CostsPage() {
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Costs</h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          Spending breakdown — last 30 days
+          Token usage &amp; spend — last 31 days · via OpenClaw Gateway
         </p>
       </div>
 
@@ -68,14 +95,15 @@ export default async function CostsPage() {
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-indigo-500" />
               <CardTitle className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Total Spend (30d)
+                Total Spend (31d)
               </CardTitle>
             </div>
           </CardHeader>
           <CardContent>
             <p className="font-mono text-2xl font-bold text-slate-900">
-              {fmt$(totalSpend)}
+              {totals.totalCost === 0 ? "$0.00" : `$${totals.totalCost.toFixed(4)}`}
             </p>
+            <p className="text-[11px] text-emerald-600 mt-1">Local models — no API cost</p>
           </CardContent>
         </Card>
 
@@ -84,17 +112,17 @@ export default async function CostsPage() {
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-indigo-500" />
               <CardTitle className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Top Agent
+                Peak Day
               </CardTitle>
             </div>
           </CardHeader>
           <CardContent>
-            {topAgent ? (
+            {peakDay ? (
               <>
-                <p className="font-semibold text-slate-900">{topAgent.agent}</p>
-                <p className="font-mono text-sm text-slate-500">
-                  {fmt$(topAgent.total_cost)}
+                <p className="font-mono text-sm font-semibold text-slate-900">
+                  {fmtTokens(peakDay.totalTokens)} tok
                 </p>
+                <p className="text-[11px] text-slate-400 mt-1">{peakDay.date}</p>
               </>
             ) : (
               <p className="text-sm text-slate-400">—</p>
@@ -107,62 +135,65 @@ export default async function CostsPage() {
             <div className="flex items-center gap-2">
               <Cpu className="h-4 w-4 text-indigo-500" />
               <CardTitle className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Total Tokens (30d)
+                Total Tokens (31d)
               </CardTitle>
             </div>
           </CardHeader>
           <CardContent>
             <p className="font-mono text-2xl font-bold text-slate-900">
-              {fmtTokens(totalTokens)}
+              {fmtTokens(totals.totalTokens)}
+            </p>
+            <p className="text-[11px] text-slate-400 mt-1">
+              ↑{fmtTokens(totals.input)} in &nbsp;↓{fmtTokens(totals.output)} out
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Detail Table */}
+      {/* Daily Breakdown Table */}
       <Card className="bg-white border-slate-200">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold text-slate-700">
-            Monthly Breakdown
+            Daily Breakdown
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {monthly.length === 0 ? (
+          {daily.length === 0 ? (
             <p className="text-sm text-slate-400 text-center py-8">
-              No cost data for this period
+              No token data available
             </p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow className="border-slate-100">
-                  <TableHead className="text-slate-500 text-xs">Agent</TableHead>
-                  <TableHead className="text-slate-500 text-xs">Model</TableHead>
-                  <TableHead className="text-slate-500 text-xs">Provider</TableHead>
+                  <TableHead className="text-slate-500 text-xs">Date</TableHead>
                   <TableHead className="text-slate-500 text-xs text-right">Tokens In</TableHead>
                   <TableHead className="text-slate-500 text-xs text-right">Tokens Out</TableHead>
+                  <TableHead className="text-slate-500 text-xs text-right">Total</TableHead>
                   <TableHead className="text-slate-500 text-xs text-right">Est. Cost</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {monthly.map((row, i) => (
-                  <TableRow key={`${row.agent}-${i}`} className="border-slate-100 hover:bg-slate-50">
-                    <TableCell className="font-medium text-slate-800 text-sm">
-                      {row.agent}
+                {daily.map((row) => (
+                  <TableRow key={row.date} className="border-slate-100 hover:bg-slate-50">
+                    <TableCell className="font-mono text-sm text-slate-800">
+                      {row.date}
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-600">
-                      {row.model}
+                    <TableCell className="font-mono text-xs text-emerald-700 text-right">
+                      {fmtTokens(row.input)}
                     </TableCell>
-                    <TableCell className="text-xs text-slate-500">
-                      {row.provider}
+                    <TableCell className="font-mono text-xs text-rose-600 text-right">
+                      {fmtTokens(row.output)}
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-600 text-right">
-                      {fmtTokens(row.tokens_in)}
+                    <TableCell className="font-mono text-xs font-semibold text-slate-700 text-right">
+                      {fmtTokens(row.totalTokens)}
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-600 text-right">
-                      {fmtTokens(row.tokens_out)}
-                    </TableCell>
-                    <TableCell className="font-mono text-xs font-semibold text-slate-800 text-right">
-                      {fmt$(row.total_cost)}
+                    <TableCell className="font-mono text-xs text-slate-500 text-right">
+                      {row.totalCost === 0 ? (
+                        <span className="text-emerald-600">$0.00</span>
+                      ) : (
+                        `$${row.totalCost.toFixed(4)}`
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

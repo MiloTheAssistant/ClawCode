@@ -1,17 +1,34 @@
-import { NextRequest, NextResponse } from "next/server";
-import { queryCosts, queryRecentCostsByAgent } from "@/lib/sqlite";
+import { NextResponse } from "next/server";
+import { execFileSync } from "child_process";
 
-export async function GET(request: NextRequest) {
-  const period =
-    (request.nextUrl.searchParams.get("period") as
-      | "day"
-      | "week"
-      | "month") || "month";
-  const view = request.nextUrl.searchParams.get("view");
+export const dynamic = "force-dynamic";
 
-  if (view === "by-agent") {
-    return NextResponse.json(queryRecentCostsByAgent());
+function gatewayCall(method: string): unknown {
+  try {
+    const out = execFileSync(
+      "openclaw",
+      ["gateway", "call", method, "--json"],
+      {
+        timeout: 8_000,
+        env: { ...process.env, NO_COLOR: "1" },
+        stdio: ["ignore", "pipe", "ignore"],
+      }
+    ).toString();
+    const start = Math.min(
+      out.indexOf("{") >= 0 ? out.indexOf("{") : Infinity,
+      out.indexOf("[") >= 0 ? out.indexOf("[") : Infinity
+    );
+    return JSON.parse(out.slice(start));
+  } catch (err) {
+    console.error("[api/costs] gateway call failed:", err);
+    return null;
   }
+}
 
-  return NextResponse.json(queryCosts(period));
+export async function GET() {
+  const data = gatewayCall("usage.cost");
+  if (!data) {
+    console.error("[api/costs] No data returned from gateway usage.cost");
+  }
+  return NextResponse.json(data ?? { daily: [], totals: {} });
 }

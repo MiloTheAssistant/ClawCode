@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync } from "fs";
+import { readFileSync, readdirSync, statSync, existsSync } from "fs";
 import { join } from "path";
 import { config } from "./config";
 
@@ -62,6 +62,117 @@ export function getActiveProjects(): ProjectEntry[] {
     return [];
   }
 }
+
+// ── Wiki ─────────────────────────────────────────────────────────────────────
+
+export interface WikiArticle {
+  slug: string;
+  title: string;
+  summary: string;
+  lastModified: string;
+}
+
+export function getWikiArticles(): WikiArticle[] {
+  const wikiDir = join(config.twobrain.root, "wiki");
+  try {
+    const files = readdirSync(wikiDir).filter(
+      (f) =>
+        f.endsWith(".md") &&
+        f !== "INDEX.md" &&
+        f !== "log.md" &&
+        !f.startsWith("_")
+    );
+    return files
+      .map((f) => {
+        const fullPath = join(wikiDir, f);
+        const content = readFileSync(fullPath, "utf-8");
+        const slug = f.replace(/\.md$/, "");
+        const titleMatch = content.match(/^#\s+(.+)$/m);
+        const summaryMatch = content.match(/\*\*Summary\*\*:\s*(.+)$/m);
+        const stat = statSync(fullPath);
+        return {
+          slug,
+          title: titleMatch ? titleMatch[1] : slug,
+          summary: summaryMatch ? summaryMatch[1].trim() : "",
+          lastModified: stat.mtime.toISOString(),
+        };
+      })
+      .sort((a, b) => b.lastModified.localeCompare(a.lastModified));
+  } catch {
+    return [];
+  }
+}
+
+export function getWikiArticleContent(slug: string): string | null {
+  if (!/^[a-z0-9-]+$/.test(slug)) return null;
+  try {
+    const filePath = join(config.twobrain.root, "wiki", `${slug}.md`);
+    if (!existsSync(filePath)) return null;
+    return readFileSync(filePath, "utf-8");
+  } catch {
+    return null;
+  }
+}
+
+// ── Briefings ─────────────────────────────────────────────────────────────────
+
+export interface BriefingSummary {
+  date: string;
+  weekday: string;
+  edition: string;
+  theme: string | null;
+  confidence: string;
+  sourcesCount: number;
+  sectionNames: string[];
+}
+
+export function getBriefings(): BriefingSummary[] {
+  const briefingsDir = join(config.twobrain.root, "briefings/archive");
+  try {
+    const files = readdirSync(briefingsDir).filter(
+      (f) => f.endsWith(".json") && f !== "latest.json"
+    );
+    return files
+      .map((f) => {
+        const data = JSON.parse(
+          readFileSync(join(briefingsDir, f), "utf-8")
+        );
+        return {
+          date: data.date as string,
+          weekday: data.weekday as string,
+          edition: (data.edition as string) || "standard",
+          theme: (data.theme as string) || null,
+          confidence: (data.confidence as string) || "unknown",
+          sourcesCount: (data.sourcesCount as number) || 0,
+          sectionNames: Object.keys(
+            (data.sections as Record<string, unknown>) || {}
+          ),
+        };
+      })
+      .sort((a, b) => b.date.localeCompare(a.date));
+  } catch {
+    return [];
+  }
+}
+
+export function getBriefingByDate(
+  date: string
+): Record<string, unknown> | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  try {
+    const filePath = join(
+      config.twobrain.root,
+      "briefings/archive",
+      `${date}.json`
+    );
+    if (!existsSync(filePath)) return null;
+    return JSON.parse(readFileSync(filePath, "utf-8"));
+  } catch {
+    return null;
+  }
+}
+
+// ── Brain Stats ───────────────────────────────────────────────────────────────
 
 export function getBrainStats() {
   try {

@@ -181,7 +181,11 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
               status={lane.status}
               headerColor={lane.headerColor}
               dotColor={lane.dotColor}
-              tasks={tasks.filter((t) => t.status === lane.status)}
+              tasks={
+                lane.status === "complete"
+                  ? tasks.filter((t) => t.status === "complete").slice(0, 8)
+                  : tasks.filter((t) => t.status === lane.status)
+              }
             />
           ))}
         </div>
