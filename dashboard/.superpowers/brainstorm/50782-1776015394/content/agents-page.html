@@ -1,0 +1,349 @@
+<h2>Command Center — Agents Page (drill-down)</h2>
+<p class="subtitle">Full fleet telemetry, grouped by layer, sorted by recent activity within each group</p>
+
+<div class="mockup">
+  <div class="mockup-header">Agents Page — accessed via left nav</div>
+  <div class="mockup-body" style="background: #f8fafc; color: #334155; padding: 0; font-family: 'Inter', system-ui, sans-serif; font-size: 11px;">
+    <!-- Ticker Bar -->
+    <div style="background: #f1f5f9; border-bottom: 1px solid #e2e8f0; padding: 5px 12px; display: flex; align-items: center; gap: 12px; font-family: monospace; font-size: 9px; color: #64748b;">
+      <span><span style="color: #22c55e;">●</span> Gateway live</span>
+      <span style="color: #cbd5e1;">│</span>
+      <span><span style="color: #22c55e;">●</span> Ollama 28</span>
+      <span style="color: #cbd5e1;">│</span>
+      <span><span style="color: #22c55e;">●</span> Disk 6.3%</span>
+      <span style="color: #cbd5e1;">│</span>
+      <span><span style="color: #22c55e;">●</span> TG</span>
+      <span style="color: #cbd5e1;">│</span>
+      <span><span style="color: #22c55e;">●</span> DC</span>
+      <span style="color: #cbd5e1;">│</span>
+      <span><span style="color: #22c55e;">●</span> Email</span>
+      <span style="margin-left: auto; color: #6366f1; font-weight: 600;">Command Center v2026.4</span>
+    </div>
+
+    <div style="display: flex; min-height: 520px;">
+      <!-- Left Nav (Agents tab active) -->
+      <div style="width: 52px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; padding-top: 12px; gap: 6px; flex-shrink: 0;">
+        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #6366f1, #4f46e5); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+          <span style="color: white; font-size: 10px; font-weight: 700;">CC</span>
+        </div>
+        <div style="width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;" title="Home">
+          <span style="font-size: 12px;">🏠</span>
+        </div>
+        <div style="width: 32px; height: 32px; background: #eef2ff; border-radius: 6px; display: flex; align-items: center; justify-content: center;" title="Agents (active)">
+          <span style="font-size: 12px;">🤖</span>
+        </div>
+        <div style="width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;" title="Costs">
+          <span style="font-size: 12px;">💰</span>
+        </div>
+        <div style="width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;" title="Memory">
+          <span style="font-size: 12px;">🧠</span>
+        </div>
+        <div style="width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;" title="Decision Log">
+          <span style="font-size: 12px;">📋</span>
+        </div>
+        <div style="width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;" title="2Brain">
+          <span style="font-size: 12px;">📚</span>
+        </div>
+        <div style="width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;" title="Workflows">
+          <span style="font-size: 12px;">⚙️</span>
+        </div>
+      </div>
+
+      <!-- Main Content: Agents Page -->
+      <div style="flex: 1; padding: 16px 20px; overflow-y: auto;">
+        <div style="display: flex; align-items: center; margin-bottom: 16px;">
+          <span style="font-size: 16px; font-weight: 700; color: #0f172a;">Agents</span>
+          <span style="font-size: 10px; color: #94a3b8; margin-left: 8px;">17 agents · 3 active now</span>
+          <span style="margin-left: auto; font-size: 9px; color: #94a3b8; font-family: monospace;">24h window · Total: 89.4k tokens · $1.29</span>
+        </div>
+
+        <!-- COMMAND LAYER -->
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 9px; color: #6366f1; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <div style="height: 1px; width: 12px; background: #6366f1;"></div>
+            Command
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <!-- Milo -->
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <div style="width: 10px; height: 10px; background: #6366f1; border-radius: 50%; box-shadow: 0 0 8px rgba(99,102,241,0.4);"></div>
+                <span style="font-weight: 700; font-size: 13px; color: #0f172a;">Milo</span>
+                <span style="margin-left: auto; background: #f0fdf4; color: #16a34a; font-size: 8px; padding: 2px 6px; border-radius: 10px; font-weight: 600;">IDLE</span>
+              </div>
+              <div style="font-size: 9px; color: #64748b; margin-bottom: 2px;">Executive Assistant — intake, scoring, dispatch, HALT authority</div>
+              <div style="font-size: 9px; color: #94a3b8; font-family: monospace; margin-bottom: 8px;">gemma4:31b-cloud · ollama cloud</div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Tokens</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">16.5k</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Think</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">14m</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Cost</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">$0.00</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Sessions</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">8</div>
+                </div>
+              </div>
+              <div style="font-size: 8px; color: #94a3b8; margin-top: 6px;">Last active: 2 min ago · Dispatched 3 tasks to Elon today</div>
+            </div>
+
+            <!-- Elon -->
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <div style="width: 10px; height: 10px; background: #f59e0b; border-radius: 50%; box-shadow: 0 0 8px rgba(245,158,11,0.5);"></div>
+                <span style="font-weight: 700; font-size: 13px; color: #0f172a;">Elon</span>
+                <span style="margin-left: auto; background: #eff6ff; color: #2563eb; font-size: 8px; padding: 2px 6px; border-radius: 10px; font-weight: 600;">WORKING</span>
+              </div>
+              <div style="font-size: 9px; color: #64748b; margin-bottom: 2px;">First Principles Orchestrator — task graphs, routing, execution</div>
+              <div style="font-size: 9px; color: #94a3b8; font-family: monospace; margin-bottom: 8px;">gpt-5.4 · Codex</div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Tokens</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">42.8k</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Think</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">1h 22m</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Cost</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #6366f1; font-family: monospace;">$0.87</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Sessions</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">5</div>
+                </div>
+              </div>
+              <div style="font-size: 8px; color: #94a3b8; margin-top: 6px;">Last active: now · Working on: Fix cron job — Security Audit</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GOVERNANCE LAYER -->
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 9px; color: #dc2626; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <div style="height: 1px; width: 12px; background: #dc2626;"></div>
+            Governance
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <!-- Sentinel (active) -->
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <div style="width: 10px; height: 10px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 8px rgba(239,68,68,0.4);"></div>
+                <span style="font-weight: 700; font-size: 13px; color: #0f172a;">Sentinel</span>
+                <span style="margin-left: auto; background: #eff6ff; color: #2563eb; font-size: 8px; padding: 2px 6px; border-radius: 10px; font-weight: 600;">WORKING</span>
+              </div>
+              <div style="font-size: 9px; color: #64748b; margin-bottom: 2px;">QA Gate — approve / reject / HALT</div>
+              <div style="font-size: 9px; color: #94a3b8; font-family: monospace; margin-bottom: 8px;">glm-4.7-flash · ollama local</div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Tokens</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">5.2k</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Think</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">3m</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Cost</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">$0.00</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Sessions</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #0f172a; font-family: monospace;">3</div>
+                </div>
+              </div>
+              <div style="font-size: 8px; color: #94a3b8; margin-top: 6px;">Last active: 1 min ago · QA Review on Security Audit</div>
+            </div>
+
+            <!-- Cortana (idle) -->
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); opacity: 0.7;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <div style="width: 10px; height: 10px; background: #8b5cf6; border-radius: 50%;"></div>
+                <span style="font-weight: 700; font-size: 13px; color: #0f172a;">Cortana</span>
+                <span style="margin-left: auto; background: #f1f5f9; color: #94a3b8; font-size: 8px; padding: 2px 6px; border-radius: 10px; font-weight: 600;">IDLE</span>
+              </div>
+              <div style="font-size: 9px; color: #64748b; margin-bottom: 2px;">State, Memory & Telemetry Engine</div>
+              <div style="font-size: 9px; color: #94a3b8; font-family: monospace; margin-bottom: 8px;">nemotron-3-nano:4b · ollama local</div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Tokens</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">1.8k</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Think</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">1m</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Cost</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">$0.00</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Sessions</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">2</div>
+                </div>
+              </div>
+              <div style="font-size: 8px; color: #cbd5e1; margin-top: 6px;">Last active: 45 min ago</div>
+            </div>
+
+            <!-- Remaining governance as compact row -->
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); opacity: 0.7;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%;"></div>
+                <span style="font-weight: 700; font-size: 13px; color: #0f172a;">Sentinel RT</span>
+                <span style="margin-left: auto; background: #f1f5f9; color: #94a3b8; font-size: 8px; padding: 2px 6px; border-radius: 10px; font-weight: 600;">IDLE</span>
+              </div>
+              <div style="font-size: 9px; color: #64748b; margin-bottom: 2px;">Adversarial QA — Red Team Testing</div>
+              <div style="font-size: 9px; color: #94a3b8; font-family: monospace; margin-bottom: 8px;">glm-5 · Z.ai</div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Tokens</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">0</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Think</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">—</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Cost</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">$0.00</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Sessions</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">0</div>
+                </div>
+              </div>
+              <div style="font-size: 8px; color: #cbd5e1; margin-top: 6px;">Never activated — on standby for elevated risk reviews</div>
+            </div>
+
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); opacity: 0.7;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <div style="width: 10px; height: 10px; background: #991b1b; border-radius: 50%;"></div>
+                <span style="font-weight: 700; font-size: 13px; color: #0f172a;">Cerberus</span>
+                <span style="margin-left: auto; background: #f1f5f9; color: #94a3b8; font-size: 8px; padding: 2px 6px; border-radius: 10px; font-weight: 600;">IDLE</span>
+              </div>
+              <div style="font-size: 9px; color: #64748b; margin-bottom: 2px;">Security Intelligence — Threat Analysis & Defense</div>
+              <div style="font-size: 9px; color: #94a3b8; font-family: monospace; margin-bottom: 8px;">nemotron-ultra-253b · NIM</div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Tokens</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">8.2k</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Think</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">8m</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Cost</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">$0.12</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 5px; padding: 5px 6px; text-align: center;">
+                  <div style="font-size: 7px; color: #94a3b8; text-transform: uppercase;">Sessions</div>
+                  <div style="font-size: 11px; font-weight: 700; color: #94a3b8; font-family: monospace;">1</div>
+                </div>
+              </div>
+              <div style="font-size: 8px; color: #cbd5e1; margin-top: 6px;">Last active: 12h ago · Security Audit (midnight cron)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SPECIALIST LAYER (showing a few, pattern continues) -->
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 9px; color: #0284c7; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <div style="height: 1px; width: 12px; background: #0284c7;"></div>
+            Specialist <span style="color: #94a3b8; font-weight: 400; text-transform: none;">· 10 agents</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <!-- Pulse -->
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); opacity: 0.7;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <div style="width: 10px; height: 10px; background: #10b981; border-radius: 50%;"></div>
+                <span style="font-weight: 700; font-size: 13px; color: #0f172a;">Pulse</span>
+                <span style="margin-left: auto; background: #f1f5f9; color: #94a3b8; font-size: 8px; padding: 2px 6px; border-radius: 10px; font-weight: 600;">IDLE</span>
+              </div>
+              <div style="font-size: 9px; color: #64748b;">Trend Scout & Signal Analysis</div>
+              <div style="font-size: 9px; color: #94a3b8; font-family: monospace; margin-bottom: 6px;">gemma4:26b · ollama local</div>
+              <div style="display: flex; gap: 12px; font-size: 9px; color: #94a3b8; font-family: monospace;">
+                <span>3.1k tok</span><span>2m think</span><span>$0.00</span><span>2 sess</span>
+              </div>
+            </div>
+
+            <!-- Hemingway -->
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); opacity: 0.7;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <div style="width: 10px; height: 10px; background: #ec4899; border-radius: 50%;"></div>
+                <span style="font-weight: 700; font-size: 13px; color: #0f172a;">Hemingway</span>
+                <span style="margin-left: auto; background: #f1f5f9; color: #94a3b8; font-size: 8px; padding: 2px 6px; border-radius: 10px; font-weight: 600;">IDLE</span>
+              </div>
+              <div style="font-size: 9px; color: #64748b;">Copy & Messaging</div>
+              <div style="font-size: 9px; color: #94a3b8; font-family: monospace; margin-bottom: 6px;">gemma4:26b · ollama local</div>
+              <div style="display: flex; gap: 12px; font-size: 9px; color: #94a3b8; font-family: monospace;">
+                <span>4.6k tok</span><span>5m think</span><span>$0.00</span><span>2 sess</span>
+              </div>
+            </div>
+
+            <!-- More specialists as compact -->
+            <div style="grid-column: span 2; display: flex; gap: 8px; flex-wrap: wrap;">
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 9px; display: flex; align-items: center; gap: 6px; opacity: 0.5;">
+                <div style="width: 7px; height: 7px; background: #3b82f6; border-radius: 50%;"></div>
+                <span style="font-weight: 600; color: #334155;">Neo</span>
+                <span style="color: #94a3b8; font-family: monospace;">0 tok · —</span>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 9px; display: flex; align-items: center; gap: 6px; opacity: 0.5;">
+                <div style="width: 7px; height: 7px; background: #64748b; border-radius: 50%;"></div>
+                <span style="font-weight: 600; color: #334155;">Cornelius</span>
+                <span style="color: #94a3b8; font-family: monospace;">0 tok · —</span>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 9px; display: flex; align-items: center; gap: 6px; opacity: 0.5;">
+                <div style="width: 7px; height: 7px; background: #eab308; border-radius: 50%;"></div>
+                <span style="font-weight: 600; color: #334155;">Jonny</span>
+                <span style="color: #94a3b8; font-family: monospace;">0 tok · —</span>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 9px; display: flex; align-items: center; gap: 6px; opacity: 0.5;">
+                <div style="width: 7px; height: 7px; background: #14b8a6; border-radius: 50%;"></div>
+                <span style="font-weight: 600; color: #334155;">Zuck</span>
+                <span style="color: #94a3b8; font-family: monospace;">0 tok · —</span>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 9px; display: flex; align-items: center; gap: 6px; opacity: 0.5;">
+                <div style="width: 7px; height: 7px; background: #8b5cf6; border-radius: 50%;"></div>
+                <span style="font-weight: 600; color: #334155;">Hermes</span>
+                <span style="color: #94a3b8; font-family: monospace;">0 tok · —</span>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 9px; display: flex; align-items: center; gap: 6px; opacity: 0.5;">
+                <div style="width: 7px; height: 7px; background: #6366f1; border-radius: 50%;"></div>
+                <span style="font-weight: 600; color: #334155;">Kairo</span>
+                <span style="color: #94a3b8; font-family: monospace;">0 tok · —</span>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 9px; display: flex; align-items: center; gap: 6px; opacity: 0.5;">
+                <div style="width: 7px; height: 7px; background: #7c3aed; border-radius: 50%;"></div>
+                <span style="font-weight: 600; color: #334155;">Themis</span>
+                <span style="color: #94a3b8; font-family: monospace;">0 tok · —</span>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 9px; display: flex; align-items: center; gap: 6px; opacity: 0.5;">
+                <div style="width: 7px; height: 7px; background: #f97316; border-radius: 50%;"></div>
+                <span style="font-weight: 600; color: #334155;">Quant</span>
+                <span style="color: #94a3b8; font-family: monospace;">0 tok · —</span>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 9px; display: flex; align-items: center; gap: 6px; opacity: 0.5;">
+                <div style="width: 7px; height: 7px; background: #8b5cf6; border-radius: 50%;"></div>
+                <span style="font-weight: 600; color: #334155;">Sagan</span>
+                <span style="color: #94a3b8; font-family: monospace;">0 tok · —</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 16px;">
+  <strong>Design notes:</strong> Agents grouped by layer (Command → Governance → Specialist). Active agents show full cards with 4-metric telemetry grid. Idle agents with recent activity show full cards at 70% opacity. Inactive specialists collapse to compact chips with just tokens and status. Cards expand to full when the agent activates. Each card shows: name, role, model + provider, status badge, tokens (24h), think time, cost, sessions, last active, and current task if working.
+</p>

@@ -1,0 +1,5 @@
+{"type":"server-started","port":57305,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:57305","screen_dir":"/Volumes/BotCentral/Users/milo/repos/ClawCode/dashboard/.superpowers/brainstorm/50782-1776015394/content","state_dir":"/Volumes/BotCentral/Users/milo/repos/ClawCode/dashboard/.superpowers/brainstorm/50782-1776015394/state"}
+{"type":"screen-added","file":"/Volumes/BotCentral/Users/milo/repos/ClawCode/dashboard/.superpowers/brainstorm/50782-1776015394/content/layout-theme.html"}
+{"type":"screen-added","file":"/Volumes/BotCentral/Users/milo/repos/ClawCode/dashboard/.superpowers/brainstorm/50782-1776015394/content/layout-theme-v2.html"}
+{"type":"screen-added","file":"/Volumes/BotCentral/Users/milo/repos/ClawCode/dashboard/.superpowers/brainstorm/50782-1776015394/content/agents-page.html"}
+{"type":"server-stopped","reason":"owner process exited"}

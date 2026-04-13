@@ -10,28 +10,35 @@ export interface WorkflowEntry {
 }
 
 export function getWorkflows(): WorkflowEntry[] {
-  // Parse from workflows.yaml — for now return known workflows
-  // Real YAML parsing would need js-yaml dependency
-  return [
-    {
-      name: "Daily Financial Briefing",
-      schedule: "8:45 AM CT, weekdays",
-      status: "active",
-      lastRun: getLastBriefingDate(),
-    },
-    {
-      name: "Market Signal Scanner",
-      schedule: "Every 4 hours",
-      status: "active",
-      lastRun: null,
-    },
-    {
-      name: "Content Repurposing Engine",
-      schedule: "Manual trigger",
-      status: "pending_approval",
-      lastRun: null,
-    },
-  ];
+  try {
+    const raw = readFileSync(
+      join(config.openclawMaster.root, "state/workflows.json"),
+      "utf-8"
+    );
+    const data = JSON.parse(raw);
+    const workflows: WorkflowEntry[] = (data.workflows ?? []).map(
+      (w: { name: string; schedule: string; status: string }) => ({
+        name: w.name,
+        schedule: w.schedule,
+        status: w.status,
+        lastRun:
+          w.name === "Daily Financial Briefing"
+            ? getLastBriefingDate()
+            : null,
+      })
+    );
+    return workflows;
+  } catch {
+    // Fallback if state file missing
+    return [
+      {
+        name: "Daily Financial Briefing",
+        schedule: "8:45 AM CT, weekdays",
+        status: "active",
+        lastRun: getLastBriefingDate(),
+      },
+    ];
+  }
 }
 
 function getLastBriefingDate(): string | null {

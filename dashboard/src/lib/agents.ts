@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { readFileSync, existsSync, statSync } from "fs";
 import { join } from "path";
 import { config } from "./config";
 
@@ -52,6 +52,39 @@ const AGENT_COLORS: Record<string, string> = {
   hermes: "#8b5cf6",
 };
 
+const OPENCLAW_DIR =
+  process.env.OPENCLAW_DIR || "/Volumes/BotCentral/Users/milo/.openclaw";
+
+function getAgentSessionStatus(
+  agentId: string
+): "idle" | "active" | "error" | "exclusive" {
+  try {
+    const sessionsFile = join(
+      OPENCLAW_DIR,
+      "agents",
+      agentId,
+      "sessions",
+      "sessions.json"
+    );
+    if (!existsSync(sessionsFile)) return "idle";
+    const raw = readFileSync(sessionsFile, "utf-8");
+    const sessions = JSON.parse(raw);
+    const keys = Object.keys(sessions);
+    if (keys.length === 0) return "idle";
+    // Check if any session was updated in the last 10 minutes
+    const now = Date.now();
+    for (const key of keys) {
+      const s = sessions[key];
+      if (s.updatedAt && now - s.updatedAt < 10 * 60 * 1000) {
+        return "active";
+      }
+    }
+    return "idle";
+  } catch {
+    return "idle";
+  }
+}
+
 function extractProvider(model: string): string {
   if (model.startsWith("ollama/")) return "Ollama Local";
   if (model.startsWith("nim/")) return "NIM";
@@ -80,7 +113,7 @@ export function getAgentRoster(): AgentInfo[] {
         provider: extractProvider(a.model),
         layer: AGENT_LAYERS[a.id] || "specialist",
         color: AGENT_COLORS[a.id] || "#6366f1",
-        status: "idle" as const,
+        status: getAgentSessionStatus(a.id),
       })
     );
   } catch {
