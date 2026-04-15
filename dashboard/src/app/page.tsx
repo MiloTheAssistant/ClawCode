@@ -14,11 +14,17 @@ export default async function Dashboard() {
   let telemetry: ReturnType<typeof getAgentTelemetry24h> = [];
   try { telemetry = getAgentTelemetry24h(); } catch { /* no-op */ }
 
-  // Prefer gateway task runs (real dispatch data); fall back to local SQLite
+  // Merge gateway task runs (real dispatch data) + local approval tasks
   let tasks: ReturnType<typeof getTasks> = [];
   try {
-    tasks = getGatewayTasks(50);
-    if (tasks.length === 0) tasks = getTasks();
+    const gatewayTasks = getGatewayTasks(50);
+    const localTasks = getTasks();
+    // Local tasks (approval items) get negative IDs to avoid collision
+    const localWithOffset = localTasks.map((t) => ({
+      ...t,
+      id: -t.id, // negative = local task
+    }));
+    tasks = [...localWithOffset, ...gatewayTasks];
   } catch { /* no-op */ }
 
   return (

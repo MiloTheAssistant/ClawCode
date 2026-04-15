@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Task } from "@/lib/tasks";
@@ -61,7 +64,51 @@ function priorityBadge(priority: string) {
   );
 }
 
-function KanbanCard({ task, dimmed }: { task: Task; dimmed: boolean }) {
+function ApprovalButtons({
+  taskId,
+  onAction,
+}: {
+  taskId: number;
+  onAction: (taskId: number, action: "approve" | "reject") => void;
+}) {
+  const [loading, setLoading] = useState<"approve" | "reject" | null>(null);
+
+  async function handleAction(action: "approve" | "reject") {
+    setLoading(action);
+    onAction(taskId, action);
+  }
+
+  return (
+    <div className="flex gap-1.5 mt-2">
+      <button
+        onClick={() => handleAction("approve")}
+        disabled={loading !== null}
+        className="flex-1 text-[10px] font-semibold px-2 py-1 rounded bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50 transition-colors"
+      >
+        {loading === "approve" ? "Dispatching..." : "Approve"}
+      </button>
+      <button
+        onClick={() => handleAction("reject")}
+        disabled={loading !== null}
+        className="flex-1 text-[10px] font-semibold px-2 py-1 rounded bg-slate-200 text-slate-600 hover:bg-slate-300 disabled:opacity-50 transition-colors"
+      >
+        {loading === "reject" ? "..." : "Reject"}
+      </button>
+    </div>
+  );
+}
+
+function KanbanCard({
+  task,
+  dimmed,
+  isApproval,
+  onAction,
+}: {
+  task: Task;
+  dimmed: boolean;
+  isApproval: boolean;
+  onAction: (taskId: number, action: "approve" | "reject") => void;
+}) {
   const dispatchChain = [task.dispatched_by, task.assigned_agent]
     .filter(Boolean)
     .join(" → ");
@@ -71,6 +118,7 @@ function KanbanCard({ task, dimmed }: { task: Task; dimmed: boolean }) {
       className={[
         "bg-white border border-slate-200 rounded-md p-2.5 shadow-sm",
         dimmed ? "opacity-75" : "",
+        isApproval ? "border-violet-200" : "",
       ].join(" ")}
     >
       {/* Title + priority */}
@@ -80,6 +128,13 @@ function KanbanCard({ task, dimmed }: { task: Task; dimmed: boolean }) {
         </span>
         {priorityBadge(task.priority)}
       </div>
+
+      {/* Description preview for approval items */}
+      {isApproval && task.description && (
+        <p className="text-[10px] text-slate-500 line-clamp-3 mb-1.5">
+          {task.description}
+        </p>
+      )}
 
       {/* Dispatch chain */}
       {dispatchChain && (
@@ -94,6 +149,11 @@ function KanbanCard({ task, dimmed }: { task: Task; dimmed: boolean }) {
           {task.model.split("/").pop()}
         </div>
       )}
+
+      {/* Approve / Reject buttons for approval lane (local tasks have negative IDs) */}
+      {isApproval && task.id !== 0 && (
+        <ApprovalButtons taskId={Math.abs(task.id)} onAction={onAction} />
+      )}
     </div>
   );
 }
@@ -104,14 +164,17 @@ function LaneColumn({
   headerColor,
   dotColor,
   tasks,
+  onAction,
 }: {
   label: string;
   status: string;
   headerColor: string;
   dotColor: string;
   tasks: Task[];
+  onAction: (taskId: number, action: "approve" | "reject") => void;
 }) {
   const isComplete = status === "complete";
+  const isApproval = status === "approval";
 
   return (
     <div className="flex flex-col min-w-0">
@@ -135,7 +198,13 @@ function LaneColumn({
           </div>
         ) : (
           tasks.map((task) => (
-            <KanbanCard key={task.id} task={task} dimmed={isComplete} />
+            <KanbanCard
+              key={task.id}
+              task={task}
+              dimmed={isComplete}
+              isApproval={isApproval}
+              onAction={onAction}
+            />
           ))
         )}
       </div>
@@ -143,15 +212,41 @@ function LaneColumn({
   );
 }
 
-export function KanbanBoard({ tasks }: KanbanBoardProps) {
+export function KanbanBoard({ tasks: initialTasks }: KanbanBoardProps) {
+  const [tasks, setTasks] = useState(initialTasks);
+
   const activeCount = tasks.filter((t) => t.status === "working").length;
   const stuckCount = tasks.filter((t) => t.status === "stuck").length;
+  const approvalCount = tasks.filter((t) => t.status === "approval").length;
 
   // Today's completed tasks (completed_at is today)
   const today = new Date().toISOString().slice(0, 10);
   const completeToday = tasks.filter(
     (t) => t.status === "complete" && t.completed_at?.startsWith(today)
   ).length;
+
+  async function handleAction(taskId: number, action: "approve" | "reject") {
+    try {
+      const resp = await fetch(`/api/tasks/${taskId}/${action}`, {
+        method: "POST",
+      });
+      if (resp.ok) {
+        // Optimistically move the task
+        setTasks((prev) =>
+          prev.map((t) =>
+            t.id === taskId
+              ? {
+                  ...t,
+                  status: action === "approve" ? ("working" as const) : ("complete" as const),
+                }
+              : t
+          )
+        );
+      }
+    } catch {
+      // silently fail — user can refresh
+    }
+  }
 
   return (
     <Card className="bg-white border-slate-200 shadow-sm">
@@ -163,11 +258,23 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
           <div className="text-[11px] font-mono text-slate-500 shrink-0">
             <span className="text-sky-600">{activeCount} active</span>
             <span className="text-slate-300 mx-1.5">·</span>
-            <span className={stuckCount > 0 ? "text-rose-500" : "text-slate-400"}>
+            <span
+              className={
+                approvalCount > 0 ? "text-violet-600" : "text-slate-400"
+              }
+            >
+              {approvalCount} approval
+            </span>
+            <span className="text-slate-300 mx-1.5">·</span>
+            <span
+              className={stuckCount > 0 ? "text-rose-500" : "text-slate-400"}
+            >
               {stuckCount} stuck
             </span>
             <span className="text-slate-300 mx-1.5">·</span>
-            <span className="text-emerald-600">{completeToday} complete today</span>
+            <span className="text-emerald-600">
+              {completeToday} complete today
+            </span>
           </div>
         </div>
       </CardHeader>
@@ -183,9 +290,12 @@ export function KanbanBoard({ tasks }: KanbanBoardProps) {
               dotColor={lane.dotColor}
               tasks={
                 lane.status === "complete"
-                  ? tasks.filter((t) => t.status === "complete").slice(0, 8)
+                  ? tasks
+                      .filter((t) => t.status === "complete")
+                      .slice(0, 8)
                   : tasks.filter((t) => t.status === lane.status)
               }
+              onAction={handleAction}
             />
           ))}
         </div>
