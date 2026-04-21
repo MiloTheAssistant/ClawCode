@@ -2,11 +2,11 @@
 """
 fetch_dfb_market_data.py
 Fetches live market data for the Daily Financial Briefing.
-Called by Cortana at the start of each DFB run.
-Outputs a single JSON block to stdout — pipe into briefings context.
+Called by the DFB pipeline at the start of each run.
+Outputs a single JSON block to stdout.
 
 Sources (all free, no API key required):
-  - Yahoo Finance: Strategy instruments (MSTR, STRC, STRD, STRK, STRF)
+  - Yahoo Finance: Strategy instruments + MAG7
   - CoinGecko: BTC price, dominance, market cap, 24h change
   - Alternative.me: Fear & Greed Index
   - CoinGecko: Global crypto market data
@@ -21,6 +21,8 @@ from typing import Optional
 
 TIMEOUT = 10
 HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"}
+
+MAG7_TICKERS = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA"]
 
 
 def fetch(url: str, label: str) -> Optional[dict]:
@@ -57,6 +59,19 @@ def fetch_yahoo(ticker: str) -> dict:
         }
     except Exception as e:
         return {"ticker": ticker, "price": None, "change24h": None, "error": str(e)}
+
+
+def fetch_mag7_prices() -> dict:
+    """Fetch live price + 24h change for all MAG7 tickers from Yahoo Finance."""
+    results = {}
+    for ticker in MAG7_TICKERS:
+        data = fetch_yahoo(ticker)
+        results[ticker.lower()] = {
+            "ticker": ticker,
+            "price": data.get("price"),
+            "change24h": data.get("change24h"),
+        }
+    return results
 
 
 def fetch_btc() -> dict:
@@ -111,11 +126,9 @@ def fetch_fear_greed() -> dict:
 
 def fetch_mstr_btc_holdings() -> dict:
     """Estimate MSTR BTC holdings from public data via Yahoo Finance extended."""
-    # MSTR doesn't publish real-time holdings — use last known public figure
-    # Strategy updates this on their website; hardcode last known + flag for Pulse to verify
     return {
         "btcHoldings": 528185,
-        "btcHoldingsNote": "Last public figure — Pulse should verify at strategy.com for any new purchases",
+        "btcHoldingsNote": "Last public figure — verify at strategy.com for any new purchases",
         "source": "strategy.com (last reported)",
     }
 
@@ -136,14 +149,13 @@ def compute_nav_premium(mstr_price: float, btc_price: float, btc_per_share: floa
 def fetch_etf_flows() -> list:
     """
     ETF flow data — no free real-time API exists.
-    Return placeholder structure for Pulse to fill via web search.
-    Pulse should check: BitcoinTreasuries, Farside Investors, Bloomberg terminal data.
+    Return placeholder structure for the agent to fill via web search.
     """
     return [
-        {"ticker": "IBIT", "issuer": "BlackRock",   "flowM": None, "note": "Pulse: check farside.co.uk or Bloomberg"},
-        {"ticker": "FBTC", "issuer": "Fidelity",    "flowM": None, "note": "Pulse: check farside.co.uk"},
-        {"ticker": "ARKB", "issuer": "ARK 21Shares", "flowM": None, "note": "Pulse: check farside.co.uk"},
-        {"ticker": "BITB", "issuer": "Bitwise",     "flowM": None, "note": "Pulse: check farside.co.uk"},
+        {"ticker": "IBIT", "issuer": "BlackRock",   "flowM": None},
+        {"ticker": "FBTC", "issuer": "Fidelity",    "flowM": None},
+        {"ticker": "ARKB", "issuer": "ARK 21Shares", "flowM": None},
+        {"ticker": "BITB", "issuer": "Bitwise",     "flowM": None},
     ]
 
 
@@ -151,36 +163,34 @@ def main():
     log("Starting DFB market data fetch...")
     fetched_at = datetime.now(timezone.utc).isoformat()
 
-    # Fetch all sources
     log("Fetching Strategy instruments...")
     strategy_tickers = {}
     for ticker in ["MSTR", "STRC", "STRD", "STRK", "STRF"]:
         strategy_tickers[ticker.lower()] = fetch_yahoo(ticker)
 
+    log("Fetching MAG7 prices...")
+    mag7_prices = fetch_mag7_prices()
+
     log("Fetching BTC price...")
     btc = fetch_btc()
-
-    log("Fetching global crypto market...")
-    global_crypto = fetch_global_crypto()
 
     log("Fetching Fear & Greed...")
     fg = fetch_fear_greed()
 
-    log("Loading ETF flow placeholders...")
+    log("Fetching ETF flows...")
     etf_flows = fetch_etf_flows()
+
+    log("Fetching global crypto market...")
+    global_crypto = fetch_global_crypto()
 
     mstr_price = strategy_tickers.get("mstr", {}).get("price")
     btc_price = btc.get("price")
     nav_premium = compute_nav_premium(mstr_price, btc_price) if mstr_price and btc_price else None
-
-    # Compose yield context for preferred instruments
-    # Benchmark: 5-year treasury ~4.2% (Pulse to verify current rate)
-    benchmark_yield = 4.2  # Pulse should override with fresh 5Y rate
+    benchmark_yield = 4.2
 
     result = {
         "fetchedAt": fetched_at,
         "dataFreshness": "live",
-        "note": "Live data. Fields marked None require Pulse web search (ETF flows, on-chain, macro).",
         "bitcoin": {
             "price": btc_price,
             "change24h": btc.get("change24h"),
@@ -195,48 +205,42 @@ def main():
             "mstr": {
                 **strategy_tickers.get("mstr", {}),
                 "navPremiumEstimate": nav_premium,
-                "navPremiumNote": "Estimated from ~0.00117 BTC/share (528,185 BTC / ~451M diluted shares). Verify at strategy.com.",
+                "navPremiumNote": "Estimated from ~0.00117 BTC/share (528,185 BTC / ~451M diluted shares).",
             },
             "strc": strategy_tickers.get("strc", {}),
             "strd": {
                 **strategy_tickers.get("strd", {}),
                 "estimatedYieldPct": None,
                 "benchmarkYieldPct": benchmark_yield,
-                "yieldNote": "Pulse: calculate yield from dividend/price. Check strategy.com/investors.",
             },
             "strk": {
                 **strategy_tickers.get("strk", {}),
                 "estimatedYieldPct": None,
                 "benchmarkYieldPct": benchmark_yield,
-                "yieldNote": "Pulse: calculate yield from dividend/price.",
             },
             "strf": {
                 **strategy_tickers.get("strf", {}),
                 "estimatedYieldPct": None,
                 "benchmarkYieldPct": benchmark_yield,
-                "yieldNote": "Pulse: calculate yield from dividend/price.",
             },
             "btcHoldings": fetch_mstr_btc_holdings(),
         },
+        "mag7": mag7_prices,
         "etfFlows": etf_flows,
-        "etfFlowNote": "No free real-time ETF flow API. Pulse must fetch from farside.co.uk/bitcoin-etf/ or coindesk.com.",
         "onChain": {
-            "note": "Pulse: fetch from glassnode.com, lookintobitcoin.com, or cryptoquant.com",
             "lthTrend": None,
             "exchangeFlow": None,
             "realizedPriceVsSpot": None,
         },
         "macro": {
-            "note": "Pulse: fetch DXY, 10Y yield, and any Fed news from Bloomberg/Reuters/CNBC",
             "dxy": None,
             "tenYearYield": None,
             "fedEvent": None,
         },
     }
 
-    # Print clean JSON to stdout
     print(json.dumps(result, indent=2))
-    log(f"Done. BTC=${btc_price:,.0f} MSTR=${mstr_price} F&G={fg.get('value')} ({fg.get('label')})")
+    log(f"Done. BTC=${btc_price or 0:,.0f} MSTR=${mstr_price or 0} F&G={fg.get('value')} ({fg.get('label')}) | MAG7: " + ", ".join(f"{k}={v.get('price')}" for k, v in mag7_prices.items()))
 
 
 if __name__ == "__main__":
